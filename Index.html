@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modern Calculator</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .calculator {
+    background: #1e1e2f;
+    padding: 30px 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    width: 320px;
+  }
+  #display {
+    width: 100%;
+    height: 60px;
+    border-radius: 10px;
+    background: #2b2b44;
+    border: none;
+    color: #eee;
+    font-size: 32px;
+    padding: 10px 20px;
+    text-align: right;
+    box-sizing: border-box;
+    margin-bottom: 25px;
+    user-select: none;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+  }
+  button {
+    background: #4c51bf;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 24px;
+    padding: 18px 0;
+    cursor: pointer;
+    box-shadow: 0 5px #3b3e99;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  button:hover {
+    background: #667eea;
+  }
+  button.operator {
+    background: #ff9500;
+    box-shadow: 0 5px #cc7a00;
+  }
+  button.operator:hover {
+    background: #ffb84d;
+  }
+  button.zero {
+    grid-column: span 2;
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <input type="text" id="display" readonly placeholder="0" />
+  <div class="buttons">
+    <button class="operator" onclick="clearDisplay()">C</button>
+    <button class="operator" onclick="deleteLast()">⌫</button>
+    <button class="operator" onclick="appendOperator('%')">%</button>
+    <button class="operator" onclick="appendOperator('/')">÷</button>
+
+    <button onclick="appendNumber('7')">7</button>
+    <button onclick="appendNumber('8')">8</button>
+    <button onclick="appendNumber('9')">9</button>
+    <button class="operator" onclick="appendOperator('*')">×</button>
+
+    <button onclick="appendNumber('4')">4</button>
+    <button onclick="appendNumber('5')">5</button>
+    <button onclick="appendNumber('6')">6</button>
+    <button class="operator" onclick="appendOperator('-')">−</button>
+
+    <button onclick="appendNumber('1')">1</button>
+    <button onclick="appendNumber('2')">2</button>
+    <button onclick="appendNumber('3')">3</button>
+    <button class="operator" onclick="appendOperator('+')">+</button>
+
+    <button class="zero" onclick="appendNumber('0')">0</button>
+    <button onclick="appendNumber('.')">.</button>
+    <button class="operator" onclick="calculateResult()">=</button>
+  </div>
+</div>
+
+<script>
+  const display = document.getElementById('display');
+
+  function appendNumber(num) {
+    if (display.value === '0' && num !== '.') {
+      display.value = num;
+    } else {
+      display.value += num;
+    }
+  }
+
+  function appendOperator(op) {
+    const lastChar = display.value.slice(-1);
+    const operators = ['+', '-', '*', '/', '%'];
+
+    // Avoid adding two operators in a row
+    if (display.value === '' && op !== '-') return; // Don't start with operator except minus
+    if (operators.includes(lastChar)) {
+      display.value = display.value.slice(0, -1) + op;
+    } else {
+      display.value += op;
+    }
+  }
+
+  function clearDisplay() {
+    display.value = '';
+  }
+
+  function deleteLast() {
+    display.value = display.value.slice(0, -1);
+  }
+
+  function calculateResult() {
+    try {
+      // Replace % with modulo operation (Javascript uses % as modulo)
+      let expression = display.value.replace(/%/g, '%');
+      // Evaluate expression safely
+      let result = Function('"use strict";return (' + expression + ')')();
+      display.value = result;
+    } catch {
+      display.value = 'Error';
+    }
+  }
+</script>
+
+</body>
+</html>
